@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="發音播放器">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<meta name="theme-color" content="#0e0e14">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>🐄 Farm Animals · 多語言發音播放器</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0e0e14;--cream:#faf8f3;--gold:#c8972a;--gold2:#e8b84b;
+  --card:#fff;--border:#e2ddd3;
+  --cuhk:#003D7C;--oxford:#002147;
+  --uk:#1e3a6e;--us:#7a2000;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;padding-bottom:60px}
+
+/* HEADER */
+header{background:var(--ink);padding:20px 18px 16px;text-align:center;position:relative;overflow:hidden}
+header::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 15% 50%,rgba(0,61,124,.5),transparent 50%),
+             radial-gradient(ellipse at 85% 50%,rgba(0,33,71,.4),transparent 50%)}
+header h1{font-family:'Fraunces',serif;font-size:clamp(1rem,4.5vw,1.6rem);font-weight:900;
+  color:#fff;letter-spacing:-.02em;position:relative;line-height:1.25}
+header h1 .uk{color:#6ea8fe} header h1 .us{color:#fca5a5} header h1 .hk{color:var(--gold2)}
+.sub-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px;position:relative}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 10px;
+  font-size:.65rem;font-weight:600;letter-spacing:.3px}
+.badge-ox{background:rgba(0,33,71,.8);color:#93c5fd;border:1px solid rgba(147,197,253,.3)}
+.badge-cu{background:rgba(0,61,124,.8);color:var(--gold2);border:1px solid rgba(232,184,75,.3)}
+
+/* SEARCH */
+.sw{max-width:540px;margin:18px auto 0;padding:0 16px}
+.sb{display:flex;gap:7px;background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;padding:7px 9px;box-shadow:0 2px 16px rgba(14,14,20,.07)}
+.sb input{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;
+  font-size:.92rem;color:var(--ink);background:transparent;padding:3px 7px}
+.sb input::placeholder{color:#ccc}
+.btn-go{background:var(--ink);color:#fff;border:none;border-radius:10px;
+  padding:8px 15px;font-weight:600;font-size:.82rem;cursor:pointer;
+  transition:opacity .2s;white-space:nowrap}
+.btn-go:hover{opacity:.8}
+
+/* WORD CARD */
+.wd{max-width:540px;margin:14px auto 0;padding:0 16px}
+.wc{background:var(--card);border-radius:18px;border:1.5px solid var(--border);
+  overflow:hidden;box-shadow:0 2px 20px rgba(14,14,20,.09);display:none}
+.wc.vis{display:block;animation:up .3s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* CARD HEAD */
+.ch{background:var(--ink);padding:16px 18px 12px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ch h2{font-family:'Fraunces',serif;font-size:1.85rem;font-weight:900;color:#fff;letter-spacing:-.03em}
+.ch .ipa{font-size:.82rem;color:rgba(255,255,255,.4);font-style:italic}
+.ch .zh{font-size:.95rem;color:rgba(255,255,255,.55);margin-left:auto}
+
+/* PLAY ROWS — full-width tap targets */
+.play-section{border-bottom:1px solid var(--border)}
+.play-row{display:flex;align-items:center;gap:0;cursor:pointer;
+  transition:background .15s;user-select:none}
+.play-row:hover{background:#f7f6f3}
+.play-row:active{background:#eeede8}
+
+/* accent swatch */
+.accent-swatch{width:6px;flex-shrink:0;align-self:stretch}
+.swatch-uk{background:var(--uk)}
+.swatch-us{background:var(--us)}
+.swatch-hk{background:var(--cuhk)}
+
+/* flag + label */
+.pr-flag{font-size:1.35rem;padding:14px 10px 14px 14px;flex-shrink:0;line-height:1}
+.pr-info{flex:1;min-width:0;padding:10px 0}
+.pr-lang{font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:#aaa;display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.pr-word{font-size:1rem;font-weight:600;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-src{font-size:.6rem;color:#ccc;margin-top:1px}
+.pr-src b{font-weight:600}
+
+/* BIG PLAY BUTTON — right side */
+.pr-btn{
+  display:flex;align-items:center;justify-content:center;
+  min-width:56px;height:100%;padding:14px 16px;
+  flex-shrink:0;font-size:1.1rem;position:relative;
+}
+.pr-btn .ripple{
+  width:40px;height:40px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:1rem;transition:transform .15s;
+}
+.play-row:hover .ripple{transform:scale(1.1)}
+.ripple-uk{background:#dbeafe;color:var(--uk)}
+.ripple-us{background:#fee2e2;color:var(--us)}
+.ripple-hk{background:#dbeafe;color:var(--cuhk)}
+
+/* PLAYING STATE */
+.play-row.playing{background:#f0f9ff}
+.play-row.playing .ripple-uk{background:var(--uk);color:#fff;animation:beat .5s ease infinite alternate}
+.play-row.playing .ripple-us{background:var(--us);color:#fff;animation:beat .5s ease infinite alternate}
+.play-row.playing .ripple-hk{background:var(--cuhk);color:var(--gold2);animation:beat .5s ease infinite alternate}
+@keyframes beat{to{transform:scale(1.15)}}
+
+/* STATUS bar */
+.stat-bar{padding:10px 16px;font-size:.73rem;color:#aaa;text-align:center;
+  border-top:1px solid var(--border);min-height:36px;display:flex;
+  align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}
+.ok{color:#22c55e;font-weight:600} .warn{color:#f59e0b;font-weight:600}
+.err{color:#ef4444;font-weight:600} .info{color:#3b82f6;font-weight:600}
+
+/* SYLLABLE ROW */
+.syl-row{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;
+  background:#f0f5ff;border-bottom:1px solid var(--border)}
+.syl-label{font-size:.6rem;color:#94a3b8;align-self:center;white-space:nowrap}
+.syl-chip{display:inline-flex;align-items:center;gap:3px;
+  background:#fff;border:1px solid #c7d7f0;border-radius:999px;
+  padding:3px 10px;font-size:.75rem;cursor:pointer;
+  transition:all .15s;color:var(--cuhk);font-weight:500}
+.syl-chip:hover{background:var(--cuhk);color:#fff;border-color:var(--cuhk)}
+.syl-chip.playing{background:var(--cuhk);color:var(--gold2);
+  border-color:var(--cuhk);animation:chip-pulse .6s ease infinite alternate}
+@keyframes chip-pulse{to{opacity:.55}}
+.chip-all{background:var(--cuhk);color:#fff;border-color:var(--cuhk);font-weight:700}
+.chip-all:hover{background:#005cbf;color:#fff}
+
+/* OTHER LANGUAGES grid */
+.other-langs{border-top:1px solid var(--border)}
+.other-hdr{font-size:.6rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:#ccc;padding:10px 16px 6px}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.lang-btn{background:var(--card);border:none;padding:12px 13px;cursor:pointer;
+  text-align:left;display:flex;align-items:center;gap:8px;transition:background .15s;
+  text-decoration:none;color:inherit;width:100%}
+.lang-btn:hover{background:#f5f3ee}
+.lang-btn .lflag{font-size:1.3rem;flex-shrink:0;line-height:1}
+.lang-btn .linfo{flex:1;min-width:0}
+.lang-btn .lname{font-size:.58rem;font-weight:700;color:#bbb;letter-spacing:.7px;
+  text-transform:uppercase}
+.lang-btn .lword{font-size:.95rem;font-weight:600;color:var(--ink);
+  margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lang-btn .lsrc{font-size:.57rem;color:#ccc;margin-top:1px}
+.lang-btn .larr{font-size:.8rem;color:#ccc;flex-shrink:0}
+
+/* CUHK INFO */
+.cuhk-info{background:#EBF2FD;border-left:4px solid var(--cuhk);
+  padding:12px 14px;font-size:.73rem;line-height:1.65;color:#1a3a6b;display:none}
+.cuhk-info a{color:var(--cuhk);text-decoration:underline}
+.cuhk-info b{font-weight:700}
+
+/* WORD LIST */
+.ls{max-width:540px;margin:22px auto 0;padding:0 16px}
+.ls h3{font-family:'Fraunces',serif;font-size:.9rem;font-weight:700;
+  color:var(--ink);margin-bottom:9px;border-left:3px solid var(--gold);padding-left:9px}
+.cg{margin-bottom:16px}
+.cl{font-size:.58rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:#bbb;margin-bottom:4px;padding-left:2px}
+.pg{display:flex;flex-wrap:wrap;gap:5px}
+.wp{background:var(--card);border:1px solid var(--border);border-radius:999px;
+  padding:4px 11px;font-size:.78rem;cursor:pointer;transition:all .15s;
+  color:var(--ink);font-weight:500}
+.wp:hover{background:var(--ink);color:#fff;border-color:var(--ink);transform:translateY(-1px)}
+
+footer{max-width:540px;margin:20px auto 0;padding:0 16px;
+  font-size:.68rem;color:#ccc;text-align:center;line-height:1.85}
+
+.back-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:none;color:#fff;padding:5px 12px 5px 8px;border-radius:999px;font-size:.75rem;font-weight:600;cursor:pointer;text-decoration:none;margin-bottom:12px;width:fit-content;-webkit-tap-highlight-color:transparent}
+.back-btn:hover{background:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+
+<a class="back-btn" href="index.html" style="position:absolute;top:calc(env(safe-area-inset-top,0px)+10px);left:14px;z-index:99">‹ 返回首頁</a>
+<header style="padding-top:calc(env(safe-area-inset-top,0px)+52px)">
+  <h1>🔊 多語言發音播放器<br>
+    <span class="uk">🇬🇧 Oxford</span> ·
+    <span class="us">🇺🇸 Oxford</span> ·
+    <span class="hk">🇭🇰 CUHK</span>
+    — 全部直接播放</h1>
+  <div class="sub-badges">
+    <span class="badge badge-ox">🎓 英語：Oxford University Press 官方錄音 · 直接播放 ▶</span>
+    <span class="badge badge-cu">🏛️ 粵語：香港中文大學學術字庫 · 直接播放 WAV ▶</span>
+  </div>
+</header>
+
+<div class="sw">
+  <div class="sb">
+    <input type="text" id="wi" placeholder="輸入英文詞彙，如 eye, apple, lion…"
+           autocomplete="off" autocapitalize="none" spellcheck="false">
+    <button class="btn-go" onclick="doSearch()">🔍 搜尋</button>
+  </div>
+</div>
+
+<div class="wd">
+  <div class="wc" id="wc">
+    <!-- Head -->
+    <div class="ch">
+      <h2 id="dw">—</h2>
+      <span class="ipa" id="dipa"></span>
+      <span class="zh" id="dzh"></span>
+    </div>
+
+    <!-- EN UK -->
+    <div class="play-section">
+      <div class="play-row" id="row-uk" onclick="playEnglish('gb')">
+        <div class="accent-swatch swatch-uk"></div>
+        <span class="pr-flag">🇬🇧</span>
+        <div class="pr-info">
+          <div class="pr-lang">English UK <span style="background:#1e3a6e;color:#93c5fd;font-size:.55rem;padding:1px 5px;border-radius:999px;font-weight:700">直接播放 ▶</span></div>
+          <div class="pr-word" id="uk-word">—</div>
+          <div class="pr-src">來源：<b>Oxford University Press</b>（英國最權威英語字典）</div>
+        </div>
+        <div class="pr-btn"><div class="ripple ripple-uk" id="icon-uk">▶</div></div>
+      </div>
+
+      <!-- EN US -->
+      <div class="play-row" id="row-us" onclick="playEnglish('us')">
+        <div class="accent-swatch swatch-us"></div>
+        <span class="pr-flag">🇺🇸</span>
+        <div class="pr-info">
+          <div class="pr-lang">English US <span style="background:#7a2000;color:#fca5a5;font-size:.55rem;padding:1px 5px;border-radius:999px;font-weight:700">直接播放 ▶</span></div>
+          <div class="pr-word" id="us-word">—</div>
+          <div class="pr-src">來源：<b>Oxford University Press</b>（美式發音版）</div>
+        </div>
+        <div class="pr-btn"><div class="ripple ripple-us" id="icon-us">▶</div></div>
+      </div>
+    </div>
+
+    <!-- HK Cantonese -->
+    <div class="play-section">
+      <div class="play-row" id="row-hk" onclick="playCantoAll()">
+        <div class="accent-swatch swatch-hk"></div>
+        <span class="pr-flag">🇭🇰</span>
+        <div class="pr-info">
+          <div class="pr-lang">粵語 Cantonese <span style="background:#003D7C;color:#e8b84b;font-size:.55rem;padding:1px 5px;border-radius:999px;font-weight:700">CUHK直播WAV ▶</span></div>
+          <div class="pr-word" id="hk-word">—</div>
+          <div class="pr-src">來源：<b>香港中文大學人文電算研究中心</b>（2013年香港十大優秀網站第一）</div>
+        </div>
+        <div class="pr-btn"><div class="ripple ripple-hk" id="icon-hk">▶</div></div>
+      </div>
+      <!-- syllable chips -->
+      <div class="syl-row" id="syl-row" style="display:none">
+        <span class="syl-label">音節：</span>
+      </div>
+    </div>
+
+    <!-- CUHK info -->
+    <div class="cuhk-info" id="cuhk-info">
+      粵語音節錄音由 <b>香港中文大學人文電算研究中心</b> 製作，屬香港最高學術水準的粵語發音資料庫（優質教育基金資助）。
+      每個音節有獨立真人錄音，點擊上方「播放全詞」可依序播放，或點擊各音節單獨試聽。<br>
+      官網：<a href="https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/" target="_blank" rel="noopener">humanum.arts.cuhk.edu.hk/Lexis/lexi-can/</a>
+    </div>
+
+    <!-- Other languages -->
+    <div class="other-langs">
+      <div class="other-hdr">其他語言 · 跳去最佳官方字典</div>
+      <div class="lang-grid" id="lgrid"></div>
+    </div>
+
+    <div class="stat-bar" id="stat">點擊上方任一語言即可直接播放發音</div>
+  </div>
+</div>
+
+<div class="ls">
+  <h3>🐄 Farm Animals · 12 個詞彙 · 點擊查發音</h3>
+  <div id="wlist"></div>
+</div>
+
+<footer>
+  🇬🇧🇺🇸 英語 — Oxford University Press 官方 MP3 · 直接播放（三層後備確保成功）<br>
+  🇭🇰 粵語 — 香港中文大學粵語審音配詞字庫 · WAV 音節直播<br>
+  🇨🇳 普通話 — 台灣教育部國語辭典（官方政府） · 🇪🇸 西班牙語 — SpanishDict<br>
+  🇫🇷 法語 — Larousse · 🇯🇵 日語 — Jisho · 🇰🇷 韓語 — 국립국어원（韓國政府）
+</footer>
+
+<script>
+const WORDS_DATA = [
+  {"en":'cow',"topic":'Farm Animals',"zh_tw":'母牛',"cant":'mou5 ngau4',"cant_syls":["mou5", "ngau4"],"slug":'cow'}
+  {"en":'pig',"topic":'Farm Animals',"zh_tw":'豬',"cant":'zyu1',"cant_syls":["zyu1"],"slug":'pig'}
+  {"en":'hen',"topic":'Farm Animals',"zh_tw":'母雞',"cant":'mou5 gai1',"cant_syls":["mou5", "gai1"],"slug":'hen'}
+  {"en":'rooster',"topic":'Farm Animals',"zh_tw":'公雞',"cant":'gung1 gai1',"cant_syls":["gung1", "gai1"],"slug":'rooster'}
+  {"en":'horse',"topic":'Farm Animals',"zh_tw":'馬',"cant":'maa5',"cant_syls":["maa5"],"slug":'horse'}
+  {"en":'goat',"topic":'Farm Animals',"zh_tw":'山羊',"cant":'saan1 joeng4',"cant_syls":["saan1", "joeng4"],"slug":'goat'}
+  {"en":'sheep',"topic":'Farm Animals',"zh_tw":'羊',"cant":'joeng4',"cant_syls":["joeng4"],"slug":'sheep'}
+  {"en":'rabbit',"topic":'Farm Animals',"zh_tw":'兔子',"cant":'tou3 zi2',"cant_syls":["tou3", "zi2"],"slug":'rabbit'}
+  {"en":'duck',"topic":'Farm Animals',"zh_tw":'鴨',"cant":'aap3',"cant_syls":["aap3"],"slug":'duck'}
+  {"en":'goose',"topic":'Farm Animals',"zh_tw":'鵝',"cant":'ngo4',"cant_syls":["ngo4"],"slug":'goose'}
+  {"en":'dog',"topic":'Farm Animals',"zh_tw":'狗',"cant":'gau2',"cant_syls":["gau2"],"slug":'dog'}
+  {"en":'cat',"topic":'Farm Animals',"zh_tw":'貓',"cant":'maau1',"cant_syls":["maau1"],"slug":'cat'}
+];
+
+
+/* ── Constants ── */
+const OX   = "https://ssl.gstatic.com/dictionary/static/sounds/20200429/";
+const CUHK = "https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/sound/";
+const DICT_API = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+
+/* ── State ── */
+let curWord = null;
+let curAudio = null;
+let sylTimers = [];
+let sylChips = [];
+
+/* ── Group words by topic ── */
+const BY_TOPIC = {};
+WORDS_DATA.forEach(w => {
+  if (!BY_TOPIC[w.topic]) BY_TOPIC[w.topic] = [];
+  BY_TOPIC[w.topic].push(w);
+});
+
+/* ── Build word list ── */
+const wlistEl = document.getElementById("wlist");
+Object.entries(BY_TOPIC).forEach(([cat, ws]) => {
+  const g = document.createElement("div"); g.className = "cg";
+  g.innerHTML = `<div class="cl">${cat}</div><div class="pg" id="pg_${cat.replace(/\W/g,'_')}"></div>`;
+  wlistEl.appendChild(g);
+  const pg = g.querySelector(".pg");
+  ws.forEach(w => {
+    const p = document.createElement("button"); p.className = "wp"; p.textContent = w.en;
+    p.onclick = () => showWord(w);
+    pg.appendChild(p);
+  });
+});
+
+/* ══════════════════════════════════════
+   AUDIO ENGINE
+══════════════════════════════════════ */
+function stopAll() {
+  if (curAudio) { try { curAudio.pause(); } catch(e){} curAudio = null; }
+  sylTimers.forEach(clearTimeout); sylTimers = [];
+  document.querySelectorAll(".play-row").forEach(r => r.classList.remove("playing"));
+  document.querySelectorAll(".syl-chip").forEach(c => c.classList.remove("playing"));
+  ["uk","us","hk"].forEach(id => {
+    const el = document.getElementById("icon-"+id);
+    if (el) el.textContent = "▶";
+  });
+}
+
+function setStatus(html) {
+  document.getElementById("stat").innerHTML = html;
+}
+
+function setPlaying(accent, isPlaying) {
+  const row  = document.getElementById("row-"+accent);
+  const icon = document.getElementById("icon-"+accent);
+  if (!row || !icon) return;
+  if (isPlaying) { row.classList.add("playing"); icon.textContent = "▐▐"; }
+  else           { row.classList.remove("playing"); icon.textContent = "▶"; }
+}
+
+/* ── Play English (UK or US) — 3-layer fallback ── */
+function playEnglish(accent) {
+  stopAll();
+  if (!curWord) return;
+  const slug = curWord.slug;
+  const label = accent === "gb" ? "🇬🇧 英式" : "🇺🇸 美式";
+  setPlaying(accent, true);
+  setStatus(`<span class="info">⏳ 載入 ${label} Oxford 官方錄音…</span>`);
+
+  /* Layer 1: Direct Oxford/Google CDN URL */
+  const url1 = `${OX}${slug}--_${accent}_1.mp3`;
+  tryPlayUrl(url1,
+    // success
+    () => {
+      setStatus(`<span class="ok">▶ 播放 ${label} Oxford 官方錄音…</span>`);
+    },
+    // end
+    () => {
+      setPlaying(accent, false);
+      setStatus(`<span class="ok">✅ ${label} Oxford 官方錄音播放完畢</span>`);
+    },
+    // error → Layer 2: dictionaryapi.dev
+    () => {
+      setStatus(`<span class="info">⏳ 嘗試備用音源（Free Dictionary API）…</span>`);
+      fetchDictApiAudio(curWord.en, accent,
+        (url2) => {
+          tryPlayUrl(url2,
+            () => setStatus(`<span class="ok">▶ 播放 ${label} 音頻（Free Dict API）…</span>`),
+            () => { setPlaying(accent, false); setStatus(`<span class="ok">✅ ${label} 音頻播放完畢</span>`); },
+            // error → Layer 3: Web Speech API
+            () => playWebSpeech(curWord.en, accent)
+          );
+        },
+        // API no result → Layer 3
+        () => playWebSpeech(curWord.en, accent)
+      );
+    }
+  );
+}
+
+function tryPlayUrl(url, onStart, onEnd, onError) {
+  const a = new Audio();
+  a.crossOrigin = "anonymous";
+  curAudio = a;
+
+  a.onplaying = () => { onStart(); };
+  a.onended   = () => { onEnd(); };
+  a.onerror   = () => { onError(); };
+
+  // Timeout: if audio doesn't start in 4s, try next layer
+  const timeout = setTimeout(() => {
+    if (curAudio === a) {
+      try { a.pause(); } catch(e) {}
+      onError();
+    }
+  }, 4000);
+
+  a.onplaying = () => { clearTimeout(timeout); onStart(); };
+
+  a.src = url;
+  a.load();
+  a.play().catch(() => {
+    clearTimeout(timeout);
+    onError();
+  });
+}
+
+function fetchDictApiAudio(word, accent, onFound, onNotFound) {
+  fetch(DICT_API + encodeURIComponent(word))
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data[0]) { onNotFound(); return; }
+      const phonetics = data[0].phonetics || [];
+      // Try to match accent
+      const accKey = accent === "gb" ? "gb" : "us";
+      let url = null;
+      for (const ph of phonetics) {
+        if (!ph.audio) continue;
+        const au = ph.audio.startsWith("//") ? "https:" + ph.audio : ph.audio;
+        if (au.includes(accKey)) { url = au; break; }
+      }
+      // Any audio will do
+      if (!url) {
+        for (const ph of phonetics) {
+          if (ph.audio) { url = ph.audio.startsWith("//") ? "https:"+ph.audio : ph.audio; break; }
+        }
+      }
+      if (url) onFound(url);
+      else onNotFound();
+    })
+    .catch(() => onNotFound());
+}
+
+/* Layer 3: Web Speech API (built into every modern browser, works offline) */
+function playWebSpeech(word, accent) {
+  if (!window.speechSynthesis) {
+    setPlaying(accent, false);
+    setStatus(`<span class="warn">⚠️ 此裝置不支援語音合成，請手動訪問 Cambridge Dictionary</span>`);
+    return;
+  }
+  setStatus(`<span class="warn">⚠️ Oxford 音源暫不可用，改用裝置語音（${accent==="gb"?"英式":"美式"}）</span>`);
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(word);
+  utt.lang  = accent === "gb" ? "en-GB" : "en-US";
+  utt.rate  = 0.9;
+  utt.pitch = 1;
+
+  // Try to find a native voice
+  const voices = window.speechSynthesis.getVoices();
+  const targetLang = accent === "gb" ? "en-GB" : "en-US";
+  const voice = voices.find(v => v.lang === targetLang) ||
+                voices.find(v => v.lang.startsWith("en-")) ||
+                null;
+  if (voice) utt.voice = voice;
+
+  utt.onstart = () => {
+    setPlaying(accent, true);
+    setStatus(`<span class="warn">▶ 裝置語音播放中（${accent==="gb"?"英式":"美式"}）— Oxford 音源請改天再試</span>`);
+  };
+  utt.onend = () => {
+    setPlaying(accent, false);
+    setStatus(`<span class="ok">✅ 裝置語音播放完畢</span>`);
+  };
+  utt.onerror = () => {
+    setPlaying(accent, false);
+    setStatus(`<span class="err">❌ 無法播放，請訪問 <a href="https://dictionary.cambridge.org/dictionary/english/${word}" target="_blank">Cambridge Dictionary</a></span>`);
+  };
+  window.speechSynthesis.speak(utt);
+}
+
+/* ── Play Cantonese (CUHK WAV syllables) ── */
+function playCantoAll() {
+  if (!curWord || !curWord.cant_syls || !curWord.cant_syls.length) return;
+  stopAll();
+  playSylSeq(curWord.cant_syls, 0);
+}
+
+function playSylSeq(syls, idx) {
+  if (idx >= syls.length) {
+    setPlaying("hk", false);
+    setStatus(`<span class="ok">✅ 粵語發音播放完畢（CUHK 官方學術錄音）</span>`);
+    return;
+  }
+  setPlaying("hk", idx === 0);
+  // Update chips
+  sylChips.forEach((c, i) => c.classList.toggle("playing", i === idx));
+  setStatus(`<span class="ok">▶ 粵語 ${idx+1}/${syls.length}：${syls[idx]}（CUHK WAV）</span>`);
+
+  const a = new Audio(`${CUHK}${syls[idx]}.wav`);
+  curAudio = a;
+  a.onended = () => {
+    sylChips[idx] && sylChips[idx].classList.remove("playing");
+    const t = setTimeout(() => playSylSeq(syls, idx+1), 60);
+    sylTimers.push(t);
+  };
+  a.onerror = () => {
+    sylChips[idx] && sylChips[idx].classList.remove("playing");
+    setStatus(`<span class="warn">⚠️ 音節 ${syls[idx]} 未找到，跳下一個</span>`);
+    const t = setTimeout(() => playSylSeq(syls, idx+1), 150);
+    sylTimers.push(t);
+  };
+  a.play().catch(() => {
+    sylChips[idx] && sylChips[idx].classList.remove("playing");
+    const t = setTimeout(() => playSylSeq(syls, idx+1), 150);
+    sylTimers.push(t);
+  });
+}
+
+function playSingleSyl(syl, chip) {
+  stopAll();
+  chip.classList.add("playing");
+  const a = new Audio(`${CUHK}${syl}.wav`);
+  curAudio = a;
+  a.onended = () => chip.classList.remove("playing");
+  a.onerror = () => { chip.classList.remove("playing"); setStatus(`<span class="warn">⚠️ 未找到 ${syl}.wav</span>`); };
+  a.play().catch(() => chip.classList.remove("playing"));
+}
+
+/* ══════════════════════════════════════
+   SHOW WORD
+══════════════════════════════════════ */
+function showWord(w) {
+  stopAll();
+  curWord = w;
+
+  /* Head */
+  document.getElementById("dw").textContent = w.en;
+  document.getElementById("dipa").textContent = "";
+  document.getElementById("dzh").textContent = w.zh_tw || "";
+  document.getElementById("uk-word").textContent = w.en;
+  document.getElementById("us-word").textContent = w.en;
+  document.getElementById("hk-word").textContent = (w.zh_tw || "") + (w.cant ? "  " + w.cant : "");
+
+  /* Syllable chips */
+  const sr = document.getElementById("syl-row");
+  [...sr.children].filter(c => !c.classList.contains("syl-label")).forEach(c => c.remove());
+  sylChips = [];
+  if (w.cant_syls && w.cant_syls.length) {
+    sr.style.display = "flex";
+    w.cant_syls.forEach(syl => {
+      const chip = document.createElement("button");
+      chip.className = "syl-chip";
+      chip.textContent = syl;
+      chip.onclick = () => { stopAll(); playSingleSyl(syl, chip); };
+      sr.appendChild(chip);
+      sylChips.push(chip);
+    });
+  } else {
+    sr.style.display = "none";
+  }
+
+  /* CUHK info */
+  document.getElementById("cuhk-info").style.display = "block";
+
+  /* Other language buttons */
+  const grid = document.getElementById("lgrid");
+  grid.innerHTML = "";
+  const others = [
+    { flag:"🇨🇳", name:"普通話", word: w.zh_tw || "—",
+      src:"台灣教育部國語辭典（官方政府）",
+      url:`https://dict.revised.moe.edu.tw/search.jsp?word=${encodeURIComponent(w.zh_tw||w.en)}&la=0` },
+    { flag:"🇪🇸", name:"Español", word: w.en,
+      src:"SpanishDict（含真人錄音）",
+      url:`https://www.spanishdict.com/translate/${encodeURIComponent(w.en)}` },
+    { flag:"🇫🇷", name:"Français", word: w.en,
+      src:"Larousse（法國官方出版社）",
+      url:`https://www.larousse.fr/dictionnaires/francais/${encodeURIComponent(w.en)}` },
+    { flag:"🇯🇵", name:"日本語", word: w.en,
+      src:"Jisho（最全日語字典）",
+      url:`https://jisho.org/search/${encodeURIComponent(w.en)}` },
+    { flag:"🇰🇷", name:"한국어", word: w.en,
+      src:"국립국어원（韓國政府機構）",
+      url:`https://stdict.korean.go.kr/search/searchView.do?searchKeyword=${encodeURIComponent(w.en)}` },
+  ];
+  // Make 5 buttons: 2+2+1
+  others.forEach(L => {
+    const a = document.createElement("a");
+    a.className = "lang-btn"; a.href = L.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.innerHTML = `
+      <span class="lflag">${L.flag}</span>
+      <div class="linfo">
+        <div class="lname">${L.name}</div>
+        <div class="lword">${L.word}</div>
+        <div class="lsrc">${L.src}</div>
+      </div>
+      <span class="larr">↗</span>`;
+    grid.appendChild(a);
+  });
+
+  /* Show card */
+  document.getElementById("wc").classList.add("vis");
+  setStatus("點擊上方任一語言即可直接播放發音");
+  document.querySelector(".wd").scrollIntoView({behavior:"smooth",block:"nearest"});
+
+  /* Fetch IPA in background */
+  fetch(DICT_API + encodeURIComponent(w.en))
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d[0]) return;
+      const ph = d[0].phonetics?.find(p => p.text);
+      if (ph) document.getElementById("dipa").textContent = ph.text;
+    }).catch(() => {});
+}
+
+/* Search */
+function doSearch() {
+  const q = document.getElementById("wi").value.trim().toLowerCase();
+  if (!q) return;
+  const found = WORDS_DATA.find(w => w.en.toLowerCase() === q) ||
+                WORDS_DATA.find(w => w.en.toLowerCase().startsWith(q));
+  if (found) showWord(found);
+  else {
+    setStatus(`<span class="warn">⚠️ 找不到「${q}」，請嘗試其他詞彙</span>`);
+    document.getElementById("wc").classList.add("vis");
+  }
+}
+document.getElementById("wi").addEventListener("keydown", e => { if(e.key==="Enter") doSearch(); });
+
+/* Preload voices for Web Speech */
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+</script>
+
+<script>
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+const _h=window.location.hash;
+if(_h.startsWith('#autoplay=')){const _w=decodeURIComponent(_h.slice(10));window.addEventListener('DOMContentLoaded',()=>{const f=typeof WORDS_DATA!=='undefined'&&(WORDS_DATA.find(w=>w.en.toLowerCase()===_w)||WORDS_DATA.find(w=>w.en.toLowerCase().startsWith(_w)));if(f&&typeof showWord==='function')showWord(f);});}
+</script>
+</body>
+</html>

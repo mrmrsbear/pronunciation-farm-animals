@@ -1,0 +1,51 @@
+{
+  "name": "多語言發音播放器 · Oxford + CUHK",
+  "short_name": "發音播放器",
+  "description": "Oxford英式/美式 + 香港中文大學粵語發音，460詞彙，30分類",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e0e14",
+  "theme_color": "#0e0e14",
+  "orientation": "portrait-primary",
+  "lang": "zh-Hant",
+  "categories": [
+    "education",
+    "kids"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Baby Aninal",
+      "url": "./pronunciation-player-baby-aninal.html",
+      "description": "動物寶寶"
+    },
+    {
+      "name": "Body Parts",
+      "url": "./pronunciation-player-body-parts.html",
+      "description": "身體部位"
+    },
+    {
+      "name": "Clothes",
+      "url": "./pronunciation-player-clothes.html",
+      "description": "衣服"
+    },
+    {
+      "name": "Colours",
+      "url": "./pronunciation-player-colours.html",
+      "description": "顏色"
+    }
+  ]
+}
