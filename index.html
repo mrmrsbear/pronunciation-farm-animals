@@ -182,7 +182,7 @@ footer{max-width:540px;margin:20px auto 0;padding:0 16px;
     <span class="hk">🇭🇰 CUHK</span>
     — 全部直接播放</h1>
   <div class="sub-badges">
-    <span class="badge badge-ox">🎓 英語：Oxford University Press 官方錄音 · 直接播放 ▶</span>
+    <span class="badge badge-ox">🎓 英語：Cambridge Dictionary 官方錄音 · 直接播放 ▶</span>
     <span class="badge badge-cu">🏛️ 粵語：香港中文大學學術字庫 · 直接播放 WAV ▶</span>
   </div>
 </header>
@@ -271,7 +271,7 @@ footer{max-width:540px;margin:20px auto 0;padding:0 16px;
 </div>
 
 <footer>
-  🇬🇧🇺🇸 英語 — Oxford University Press 官方 MP3 · 直接播放（三層後備確保成功）<br>
+  🇬🇧🇺🇸 英語 — Cambridge Dictionary 官方 MP3 · 直接播放（三層後備確保成功）<br>
   🇭🇰 粵語 — 香港中文大學粵語審音配詞字庫 · WAV 音節直播<br>
   🇨🇳 普通話 — 台灣教育部國語辭典（官方政府） · 🇪🇸 西班牙語 — SpanishDict<br>
   🇫🇷 法語 — Larousse · 🇯🇵 日語 — Jisho · 🇰🇷 韓語 — 국립국어원（韓國政府）
@@ -279,23 +279,25 @@ footer{max-width:540px;margin:20px auto 0;padding:0 16px;
 
 <script>
 const WORDS_DATA = [
-  {"en":'cow',"topic":'Farm Animals',"zh_tw":'母牛',"cant":'mou5 ngau4',"cant_syls":["mou5", "ngau4"],"slug":'cow'}
-  {"en":'pig',"topic":'Farm Animals',"zh_tw":'豬',"cant":'zyu1',"cant_syls":["zyu1"],"slug":'pig'}
-  {"en":'hen',"topic":'Farm Animals',"zh_tw":'母雞',"cant":'mou5 gai1',"cant_syls":["mou5", "gai1"],"slug":'hen'}
-  {"en":'rooster',"topic":'Farm Animals',"zh_tw":'公雞',"cant":'gung1 gai1',"cant_syls":["gung1", "gai1"],"slug":'rooster'}
-  {"en":'horse',"topic":'Farm Animals',"zh_tw":'馬',"cant":'maa5',"cant_syls":["maa5"],"slug":'horse'}
-  {"en":'goat',"topic":'Farm Animals',"zh_tw":'山羊',"cant":'saan1 joeng4',"cant_syls":["saan1", "joeng4"],"slug":'goat'}
-  {"en":'sheep',"topic":'Farm Animals',"zh_tw":'羊',"cant":'joeng4',"cant_syls":["joeng4"],"slug":'sheep'}
-  {"en":'rabbit',"topic":'Farm Animals',"zh_tw":'兔子',"cant":'tou3 zi2',"cant_syls":["tou3", "zi2"],"slug":'rabbit'}
-  {"en":'duck',"topic":'Farm Animals',"zh_tw":'鴨',"cant":'aap3',"cant_syls":["aap3"],"slug":'duck'}
-  {"en":'goose',"topic":'Farm Animals',"zh_tw":'鵝',"cant":'ngo4',"cant_syls":["ngo4"],"slug":'goose'}
-  {"en":'dog',"topic":'Farm Animals',"zh_tw":'狗',"cant":'gau2',"cant_syls":["gau2"],"slug":'dog'}
-  {"en":'cat',"topic":'Farm Animals',"zh_tw":'貓',"cant":'maau1',"cant_syls":["maau1"],"slug":'cat'}
+  {"en": "cow", "topic": "Farm Animals", "zh_tw": "母牛", "cant": "mou5 ngau4", "cant_syls": ["mou5", "ngau4"], "slug": "cow"},
+  {"en": "pig", "topic": "Farm Animals", "zh_tw": "豬", "cant": "zyu1", "cant_syls": ["zyu1"], "slug": "pig"},
+  {"en": "hen", "topic": "Farm Animals", "zh_tw": "母雞", "cant": "mou5 gai1", "cant_syls": ["mou5", "gai1"], "slug": "hen"},
+  {"en": "rooster", "topic": "Farm Animals", "zh_tw": "公雞", "cant": "gung1 gai1", "cant_syls": ["gung1", "gai1"], "slug": "rooster"},
+  {"en": "horse", "topic": "Farm Animals", "zh_tw": "馬", "cant": "maa5", "cant_syls": ["maa5"], "slug": "horse"},
+  {"en": "goat", "topic": "Farm Animals", "zh_tw": "山羊", "cant": "saan1 joeng4", "cant_syls": ["saan1", "joeng4"], "slug": "goat"},
+  {"en": "sheep", "topic": "Farm Animals", "zh_tw": "羊", "cant": "joeng4", "cant_syls": ["joeng4"], "slug": "sheep"},
+  {"en": "rabbit", "topic": "Farm Animals", "zh_tw": "兔子", "cant": "tou3 zi2", "cant_syls": ["tou3", "zi2"], "slug": "rabbit"},
+  {"en": "duck", "topic": "Farm Animals", "zh_tw": "鴨", "cant": "aap3", "cant_syls": ["aap3"], "slug": "duck"},
+  {"en": "goose", "topic": "Farm Animals", "zh_tw": "鵝", "cant": "ngo4", "cant_syls": ["ngo4"], "slug": "goose"},
+  {"en": "dog", "topic": "Farm Animals", "zh_tw": "狗", "cant": "gau2", "cant_syls": ["gau2"], "slug": "dog"},
+  {"en": "cat", "topic": "Farm Animals", "zh_tw": "貓", "cant": "maau1", "cant_syls": ["maau1"], "slug": "cat"}
 ];
 
 
 /* ── Constants ── */
 const OX   = "https://ssl.gstatic.com/dictionary/static/sounds/20200429/";
+const CAM_UK = (s) => `https://dictionary.cambridge.org/media/english/uk_pron/${s[0]}/${s}__gb_1.mp3`;
+const CAM_US = (s) => `https://dictionary.cambridge.org/media/english/us_pron/${s[0]}/${s}__us_1.mp3`;
 const CUHK = "https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/sound/";
 const DICT_API = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 
@@ -359,22 +361,29 @@ function playEnglish(accent) {
   const slug = curWord.slug;
   const label = accent === "gb" ? "🇬🇧 英式" : "🇺🇸 美式";
   setPlaying(accent, true);
-  setStatus(`<span class="info">⏳ 載入 ${label} Oxford 官方錄音…</span>`);
+  setStatus(`<span class="info">⏳ 載入 ${label} Cambridge 官方錄音…</span>`);
 
   /* Layer 1: Direct Oxford/Google CDN URL */
-  const url1 = `${OX}${slug}--_${accent}_1.mp3`;
+  const url1 = accent === "gb" ? CAM_UK(slug) : CAM_US(slug);
+  const url_ox = `${OX}${slug}--_${accent}_1.mp3`;
   tryPlayUrl(url1,
     // success
     () => {
-      setStatus(`<span class="ok">▶ 播放 ${label} Oxford 官方錄音…</span>`);
+      setStatus(`<span class="ok">▶ 播放 ${label} Cambridge 官方錄音…</span>`);
     },
     // end
     () => {
       setPlaying(accent, false);
-      setStatus(`<span class="ok">✅ ${label} Oxford 官方錄音播放完畢</span>`);
+      setStatus(`<span class="ok">✅ ${label} Cambridge 官方錄音播放完畢</span>`);
     },
-    // error → Layer 2: dictionaryapi.dev
+    // error → Layer 1b: Oxford/Google CDN
     () => {
+      setStatus(`<span class="info">⏳ 嘗試 Oxford 備用音源…</span>`);
+      tryPlayUrl(url_ox,
+        () => { setStatus(`<span class="ok">▶ 播放 ${label} Oxford 備用錄音…</span>`); },
+        () => { setPlaying(accent, false); setStatus(`<span class="ok">✅ 播放完畢</span>`); },
+        // error → Layer 2: dictionaryapi.dev
+        () => {
       setStatus(`<span class="info">⏳ 嘗試備用音源（Free Dictionary API）…</span>`);
       fetchDictApiAudio(curWord.en, accent,
         (url2) => {
@@ -387,6 +396,8 @@ function playEnglish(accent) {
         },
         // API no result → Layer 3
         () => playWebSpeech(curWord.en, accent)
+      );
+    }
       );
     }
   );
@@ -452,7 +463,7 @@ function playWebSpeech(word, accent) {
     setStatus(`<span class="warn">⚠️ 此裝置不支援語音合成，請手動訪問 Cambridge Dictionary</span>`);
     return;
   }
-  setStatus(`<span class="warn">⚠️ Oxford 音源暫不可用，改用裝置語音（${accent==="gb"?"英式":"美式"}）</span>`);
+  setStatus(`<span class="warn">⚠️ Cambridge 音源暫不可用，改用裝置語音（${accent==="gb"?"英式":"美式"}）</span>`);
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(word);
   utt.lang  = accent === "gb" ? "en-GB" : "en-US";
@@ -469,7 +480,7 @@ function playWebSpeech(word, accent) {
 
   utt.onstart = () => {
     setPlaying(accent, true);
-    setStatus(`<span class="warn">▶ 裝置語音播放中（${accent==="gb"?"英式":"美式"}）— Oxford 音源請改天再試</span>`);
+    setStatus(`<span class="warn">▶ 裝置語音播放中（${accent==="gb"?"英式":"美式"}）— Cambridge 音源請改天再試</span>`);
   };
   utt.onend = () => {
     setPlaying(accent, false);
