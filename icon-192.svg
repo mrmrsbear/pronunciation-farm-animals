@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="40" fill="#0e0e14"/>
+  <rect x="8" y="8" width="176" height="176" rx="34" fill="#1a1a24"/>
+  <!-- Sound wave arcs -->
+  <path d="M96 56 Q96 56 96 136" stroke="none"/>
+  <!-- Speaker icon -->
+  <rect x="62" y="82" width="22" height="28" rx="4" fill="#c8972a"/>
+  <path d="M84 82 L104 66 L104 126 L84 110 Z" fill="#c8972a"/>
+  <!-- Sound waves -->
+  <path d="M110 78 Q122 96 110 114" stroke="#e8b84b" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M118 70 Q136 96 118 122" stroke="#e8b84b" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Flags row -->
+  <text x="96" y="158" text-anchor="middle" font-size="22" font-family="serif">🇬🇧🇺🇸🇭🇰</text>
+</svg>

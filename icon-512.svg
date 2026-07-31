@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#0e0e14"/>
+  <rect x="16" y="16" width="480" height="480" rx="88" fill="#1a1a24"/>
+  <rect x="148" y="196" width="64" height="80" rx="10" fill="#c8972a"/>
+  <path d="M212 196 L288 148 L288 364 L212 316 Z" fill="#c8972a"/>
+  <path d="M300 188 Q336 256 300 324" stroke="#e8b84b" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M326 162 Q376 256 326 350" stroke="#e8b84b" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <text x="256" y="428" text-anchor="middle" font-size="60" font-family="serif">🇬🇧🇺🇸🇭🇰</text>
+</svg>
